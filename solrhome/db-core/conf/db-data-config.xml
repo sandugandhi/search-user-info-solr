@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataConfig>
+	<dataSource name="jdbc" driver="oracle.jdbc.driver.OracleDriver" url="jdbc:oracle:thin:@dhdcorp:1528:DHDB" user="PR_ENTITIES" password="shell9" />
+	<!-- <propertyWriter dateFormat="yyyy-MM-dd HH:mm:ss" type="SimplePropertiesWriter" filename="dataimport.properties"/> -->
+	<!-- dataSource name="test.dhdb" jndiName="java:comp/env/jdbc/dhdbmhdisc" type="JdbcDataSource" user="" password=""/ -->
+	<document name="entity.Documents">
+		<entity name="ENTITIES" pk="ENTITY_NO"  transformer="DateFormatTransformer" query="SELECT ENTITY_NO,FULL_NAME,PERSON_NON_PERSON,LANGUAGE,SURNAME,FIRSTNAME,INIT,TITLE,SEX,DATE_OF_BIRTH,LEGAL_REF_NO,DEFAULT_ROLE,NICKNAME,LEGAL_REF_NO_TYPE,LANGUAGE_CD FROM ENTITIES" deltaImportQuery="SELECT ENTITY_NO,FULL_NAME,PERSON_NON_PERSON,LANGUAGE,SURNAME,FIRSTNAME,INIT,TITLE,SEX,DATE_OF_BIRTH,LEGAL_REF_NO,DEFAULT_ROLE,NICKNAME,LEGAL_REF_NO_TYPE,LANGUAGE_CD FROM ENTITIES WHERE ENTITY_NO='${dih.delta.ENTITY_NO}'" deltaQuery="SELECT ENTITY_NO FROM ENTITIES WHERE DATE_TIME_LAST_MODIFIED &gt; TO_DATE('${dih.last_index_time}','yyyy-mm-dd HH24:MI:SS')">
+			<field column="ENTITY_NO" name="entity_no" />
+			<field column="FULL_NAME" name="full_name" />
+			<field column="PERSON_NON_PERSON" name="person_non_person" />
+			<field column="LANGUAGE" name="language" />
+			<field column="SURNAME" name="surname" />
+			<field column="FIRSTNAME" name="firstname" />
+			<field column="INIT" name="init" />
+			<field column="TITLE" name="title" />
+			<field column="SEX" name="sex" />
+			<field column="DATE_OF_BIRTH" name="date_of_birth"   dateTimeFormat="yyyy-MM-dd" />
+			<field column="LEGAL_REF_NO" name="legal_ref_no" />
+			<field column="DEFAULT_ROLE" name="default_role" />
+			<field column="NICKNAME" name="nickname" />
+			<field column="LEGAL_REF_NO_TYPE" name="legal_ref_no_type" />
+			<field column="LANGUAGE_CD" name="language_cd" />
+			<entity name="ENTITY_OTHER_NOS" query="SELECT ENTITY_NO,NO_TYPE,ENTITY_OTHER_NO FROM ENTITY_OTHER_NOS WHERE ENTITY_NO='${ENTITIES.ENTITY_NO}'" deltaQuery="SELECT ENTITY_NO,NO_TYPE,ENTITY_OTHER_NO FROM ENTITY_OTHER_NOS WHERE DATE_TIME_LAST_MODIFIED &gt; TO_DATE('${dih.last_index_time}','yyyy-mm-dd HH24:MI:SS')" parentDeltaQuery="SELECT ENTITY_NO FROM ENTITIES WHERE ENTITY_NO=${ENTITY_OTHER_NOS.ENTITY_NO}" >
+				<field column="ENTITY_NO" name="entity_no" />
+				<field column="NO_TYPE" name="no_type" />
+				<field column="ENTITY_OTHER_NO" name="entity_other_no" />
+			</entity>
+			<entity name="ENTITY_ADDR_DETS" query="SELECT ENTITY_NO,ORG_NAME,ADDR_LINE_1,ADDR_LINE_2,ADDR_LINE_3,ADDR_TYPE,SUBURB,CITY,REGION,COUNTRY_CD,POST_CD FROM ENTITY_ADDR_DETS WHERE ENTITY_NO='${ENTITIES.ENTITY_NO}'" deltaImportQuery="SELECT ENTITY_NO,ORG_NAME,ADDR_LINE_1,ADDR_LINE_2,ADDR_LINE_3,ADDR_TYPE,SUBURB,CITY,REGION,COUNTRY_CD,POST_CD FROM ENTITY_ADDR_DETS WHERE ENTITY_NO='${dih.delta.ENTITY_NO}'" deltaQuery="SELECT ENTITY_NO, DATE_TIME_LAST_MODIFIED FROM ENTITY_ADDR_DETS WHERE DATE_TIME_LAST_MODIFIED &gt; TO_DATE('${dih.last_index_time}','yyyy-mm-dd HH24:MI:SS')" parentDeltaQuery="SELECT ENTITY_NO FROM ENTITIES WHERE ENTITY_NO=${ENTITY_ADDR_DETS.ENTITY_NO}">
+				<field column="ENTITY_NO" name="entity_no"  />
+				<field column="ORG_NAME" name="org_name" />
+				<field column="ADDR_LINE_1" name="addr_line_1" />
+				<field column="ADDR_LINE_2" name="addr_line_2" />
+				<field column="ADDR_LINE_3" name="addr_line_3" />
+				<field column="ADDR_TYPE" name="addr_type" />
+				<field column="SUBURB" name="suburb" />
+				<field column="CITY" name="city" />
+				<field column="REGION" name="region" />
+				<field column="COUNTRY_CD" name="country_cd" />
+				<field column="POST_CD" name="post_cd" />
+			</entity>
+			<entity name="ENTITY_ROLE_USAGES" query="SELECT ENTITY_NO, ENTITY_ROLE FROM ENTITY_ROLE_USAGES WHERE ENTITY_NO='${ENTITIES.ENTITY_NO}' AND ENTITY_ROLE !='DPE'" deltaImportQuery="SELECT ENTITY_NO, ENTITY_ROLE FROM ENTITY_ROLE_USAGES WHERE ENTITY_NO='${dih.delta.ENTITY_NO}' AND ENTITY_ROLE !='DPE'" deltaQuery="SELECT ENTITY_NO, DATE_TIME_LAST_MODIFIED FROM ENTITY_ROLE_USAGES WHERE DATE_TIME_LAST_MODIFIED &gt; TO_DATE('${dih.last_index_time}','yyyy-mm-dd HH24:MI:SS') AND ENTITY_ROLE !='DPE'" parentDeltaQuery="SELECT ENTITY_NO FROM ENTITIES WHERE ENTITY_NO=${ENTITY_ROLE_USAGES.ENTITY_NO}">
+				<field column="ENTITY_NO"   name="entity_no"/>
+				<field column="ENTITY_ROLE"  name="entity_role"/>
+			</entity>
+			<entity name="ENTITY_POLICY_CONN_HIST" query="SELECT ENTITY_NO,ENTITY_ROLE,POLICY_NO,PROD_CD FROM ENTITY_POLICY_CONN_HIST WHERE ENTITY_NO='${ENTITIES.ENTITY_NO}' AND ENTITY_ROLE !='DPE'" deltaImportQuery="SELECT ENTITY_NO, ENTITY_ROLE,POLICY_NO,PROD_CD FROM ENTITY_POLICY_CONN_HIST WHERE ENTITY_NO='${dih.delta.ENTITY_NO}' AND ENTITY_ROLE !='DPE'" deltaQuery="SELECT ENTITY_NO, DATE_TIME_LAST_MODIFIED FROM ENTITY_POLICY_CONN_HIST WHERE DATE_TIME_LAST_MODIFIED &gt; TO_DATE('${dih.last_index_time}','yyyy-mm-dd HH24:MI:SS') AND ENTITY_ROLE !='DPE'" parentDeltaQuery="SELECT ENTITY_NO FROM ENTITIES WHERE ENTITY_NO=${ENTITY_POLICY_CONN_HIST.ENTITY_NO}" >
+				<field column="ENTITY_NO" name="entity_no"/>
+				<field column="ENTITY_ROLE" name="entity_role"/>
+				<field column="POLICY_NO" name="policy_no"/>
+				<field column="PROD_CD" name="prod_cd"/>
+			</entity>
+			<entity name="ENTITY_ATTRIBUTES" query="SELECT ENTITY_NO,ATTRIBUTE_CD,ATTRIBUTE_VALUE FROM ENTITY_ATTRIBUTES WHERE ENTITY_NO='${ENTITIES.ENTITY_NO}'" deltaImportQuery="SELECT ENTITY_NO,ATTRIBUTE_CD,ATTRIBUTE_VALUE FROM ENTITY_ATTRIBUTES WHERE ENTITY_NO='${dih.delta.ENTITY_NO}'" deltaQuery="SELECT ENTITY_NO, DATE_TIME_LAST_MODIFIED FROM ENTITY_ATTRIBUTES WHERE DATE_TIME_LAST_MODIFIED &gt; TO_DATE('${dih.last_index_time}','yyyy-mm-dd HH24:MI:SS')" parentDeltaQuery="SELECT ENTITY_NO FROM ENTITIES WHERE ENTITY_NO=${ENTITY_ATTRIBUTES.ENTITY_NO}">
+				<field column="ENTITY_NO" name="entity_no"/>
+				<field column="ATTRIBUTE_CD" name="attribute_cd"/>
+				<field column="ATTRIBUTE_VALUE" name="attribute_value"/>
+			</entity>
+			<entity name="ENTITY_EMAILS" query="SELECT ENTITY_NO,EMAIL_TYPE,EMAIL_ADDR FROM ENTITY_EMAILS WHERE ENTITY_NO='${ENTITIES.ENTITY_NO}'" deltaImportQuery="SELECT ENTITY_NO,EMAIL_TYPE,EMAIL_ADDR FROM ENTITY_EMAILS WHERE ENTITY_NO='${dih.delta.ENTITY_NO}'" deltaQuery="SELECT ENTITY_NO, DATE_TIME_LAST_MODIFIED FROM ENTITY_EMAILS WHERE DATE_TIME_LAST_MODIFIED &gt; TO_DATE('${dih.last_index_time}','yyyy-mm-dd HH24:MI:SS')" parentDeltaQuery="SELECT ENTITY_NO FROM ENTITIES WHERE ENTITY_NO=${ENTITY_EMAILS.ENTITY_NO}">
+				<field column="ENTITY_NO" name="entity_no"/>
+				<field column="EMAIL_TYPE" name="email_type"/>
+				<field column="EMAIL_ADDR" name="email_addr"/>
+			</entity>
+			<entity name="ENTITY_CONTACT_DETS" query="SELECT ENTITY_NO,CONTACT_TYPE,INTNL_DIAL_CD,REGION_DIAL_CD,CONTACT_NO,EXTENSION FROM ENTITY_CONTACT_DETS WHERE ENTITY_NO='${ENTITIES.ENTITY_NO}'" deltaImportQuery="SELECT ENTITY_NO,CONTACT_TYPE,INTNL_DIAL_CD,REGION_DIAL_CD,CONTACT_NO,EXTENSION FROM ENTITY_CONTACT_DETS WHERE ENTITY_NO='${dih.delta.ENTITY_NO}'" deltaQuery="SELECT ENTITY_NO,DATE_TIME_LAST_MODIFIED FROM ENTITY_CONTACT_DETS WHERE DATE_TIME_LAST_MODIFIED &gt; TO_DATE('${dih.last_index_time}','yyyy-mm-dd HH24:MI:SS')" parentDeltaQuery="SELECT ENTITY_NO FROM ENTITIES WHERE ENTITY_NO=${ENTITY_CONTACT_DETS.ENTITY_NO}">
+				<field column="ENTITY_NO"  name="entity_no"  />
+				<field column="CONTACT_TYPE"  name="contact_type"  />
+				<field column="INTNL_DIAL_CD"  name="intnl_dial_cd"  />
+				<field column="REGION_DIAL_CD"  name="region_dial_cd"  />
+				<field column="CONTACT_NO"  name="contact_no"  />
+				<field column="EXTENSION"  name="extension"  />
+			</entity>
+		</entity>
+	</document>
+</dataConfig>
